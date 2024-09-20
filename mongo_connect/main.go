@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	// "time"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	// "go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 type manager struct {
@@ -21,8 +20,7 @@ var Mgr manager
 
 func connectDb() {
 	// Connect to MongoDB
-	mongoURI := "mongodb://localhost:27017"
-
+	mongoURI := "mongodb+srv://admin:admin@cluster0.x4pzq.mongodb.net/"
 	// Connect to MongoDB
 	clientOptions := options.Client().ApplyURI(mongoURI)
 	client, err := mongo.Connect(Mgr.Ctx, clientOptions)
@@ -32,21 +30,12 @@ func connectDb() {
 	}
 	// Set the client to the manager
 	Mgr.Connection = client
-	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
-	// err = client.Connect(ctx)
-	// // Check the error
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// err = client.Ping(ctx, readpref.Primary())
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// Mgr = manager{Connection: client, Ctx: ctx, Cancel: cancel}
+	Mgr.Ctx, Mgr.Cancel = ctx, cancel
+
 	fmt.Println("Database Connected...!!!")
+	defer Close(Mgr.Connection, Mgr.Ctx, Mgr.Cancel)
 }
 func Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc) {
 	// Close the connection

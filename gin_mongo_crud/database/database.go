@@ -46,4 +46,5 @@ func init() {
 
 	// Set the database and collection variables
 	DB = client.Database("user").Collection("user_info")
+
 }
